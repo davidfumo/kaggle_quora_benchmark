@@ -4,6 +4,7 @@ from sklearn.preprocessing import OneHotEncoder,LabelEncoder,StandardScaler
 from sklearn.decomposition import TruncatedSVD,PCA
 from sklearn.metrics.pairwise import cosine_similarity, pairwise_distances
 from sklearn.feature_extraction.text import TfidfVectorizer
+from fuzzywuzzy import fuzz
 import distance
 from nltk.corpus import stopwords
 import nltk
@@ -64,6 +65,30 @@ feats.append('R')
 train['common_words'] = train.apply(lambda x: len(set(str(x['question1']).lower().split()).intersection(set(str(x['question2']).lower().split()))), axis=1)
 test['common_words'] = test.apply(lambda x: len(set(str(x['question1']).lower().split()).intersection(set(str(x['question2']).lower().split()))), axis=1)
 feats.append('common_words')
+
+train['fuzz_qratio'] = train.apply(lambda x: fuzz.QRatio(str(x['question1']), str(x['question2'])), axis=1)
+train['fuzz_WRatio'] = train.apply(lambda x: fuzz.WRatio(str(x['question1']), str(x['question2'])), axis=1)
+train['fuzz_partial_ratio'] = train.apply(lambda x: fuzz.partial_ratio(str(x['question1']), str(x['question2'])), axis=1)
+train['fuzz_partial_token_set_ratio'] = train.apply(lambda x: fuzz.partial_token_set_ratio(str(x['question1']), str(x['question2'])), axis=1)
+train['fuzz_partial_token_sort_ratio'] = train.apply(lambda x: fuzz.partial_token_sort_ratio(str(x['question1']), str(x['question2'])), axis=1)
+train['fuzz_token_set_ratio'] = train.apply(lambda x: fuzz.token_set_ratio(str(x['question1']), str(x['question2'])), axis=1)
+train['fuzz_token_sort_ratio'] = train.apply(lambda x: fuzz.token_sort_ratio(str(x['question1']), str(x['question2'])), axis=1)
+
+test['fuzz_qratio'] = test.apply(lambda x: fuzz.QRatio(str(x['question1']), str(x['question2'])), axis=1)
+test['fuzz_WRatio'] = test.apply(lambda x: fuzz.WRatio(str(x['question1']), str(x['question2'])), axis=1)
+test['fuzz_partial_ratio'] = test.apply(lambda x: fuzz.partial_ratio(str(x['question1']), str(x['question2'])), axis=1)
+test['fuzz_partial_token_set_ratio'] = test.apply(lambda x: fuzz.partial_token_set_ratio(str(x['question1']), str(x['question2'])), axis=1)
+test['fuzz_partial_token_sort_ratio'] = test.apply(lambda x: fuzz.partial_token_sort_ratio(str(x['question1']), str(x['question2'])), axis=1)
+test['fuzz_token_set_ratio'] = test.apply(lambda x: fuzz.token_set_ratio(str(x['question1']), str(x['question2'])), axis=1)
+test['fuzz_token_sort_ratio'] = test.apply(lambda x: fuzz.token_sort_ratio(str(x['question1']), str(x['question2'])), axis=1)
+
+feats.append('fuzz_qratio')
+feats.append('fuzz_WRatio')
+feats.append('fuzz_partial_ratio')
+feats.append('fuzz_partial_token_set_ratio')
+feats.append('fuzz_partial_token_sort_ratio')
+feats.append('fuzz_token_set_ratio')
+feats.append('fuzz_token_sort_ratio')
 
 for c in ['question1','question2']:
     train['%s_char_len'%c] = train[c].apply(lambda x:char_len(x))
